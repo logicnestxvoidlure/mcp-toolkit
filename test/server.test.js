@@ -6,8 +6,8 @@ import {once} from 'node:events';
 test('MCP handshake, discovery, invocation, and errors over stdio',async()=>{
  const child=spawn(process.execPath,['src/server.js'],{stdio:['pipe','pipe','pipe']});
  let data=''; const responses=[];
- child.stdout.on('data',chunk=>{data+=chunk;let index;while((index=data.indexOf('\\n'))>=0){const line=data.slice(0,index);data=data.slice(index+1);responses.push(JSON.parse(line));}});
- const send=message=>child.stdin.write(JSON.stringify(message)+'\\n');
+ child.stdout.on('data',chunk=>{data+=chunk;let index;while((index=data.indexOf('\n'))>=0){const line=data.slice(0,index);data=data.slice(index+1);responses.push(JSON.parse(line));}});
+ const send=message=>child.stdin.write(JSON.stringify(message)+'\n');
  send({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'test',version:'1'}}});
  send({jsonrpc:'2.0',method:'notifications/initialized'});
  send({jsonrpc:'2.0',id:2,method:'tools/list'});
