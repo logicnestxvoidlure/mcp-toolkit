@@ -7,6 +7,8 @@ export const definitions = [
   { name: 'base64_convert', description: 'Encode UTF-8 text to Base64 or decode strict Base64 into UTF-8.', inputSchema: {type:'object',properties:{text:{type:'string'},operation:{type:'string',enum:['encode','decode']}},required:['text','operation'],additionalProperties:false}},
   { name: 'json_format', description: 'Pretty-print or minify a JSON string.', inputSchema: {type:'object',properties:{json:{type:'string'},indent:{type:'integer',minimum:0,maximum:8}},required:['json'],additionalProperties:false}},
   { name: 'timestamp_convert', description: 'Convert an ISO 8601 timestamp or Unix milliseconds to UTC ISO and Unix seconds/milliseconds.', inputSchema: {type:'object',properties:{value:{oneOf:[{type:'string'},{type:'number'}]}},required:['value'],additionalProperties:false}},
+  { name: 'json_pointer', description: 'Look up a value in JSON using an RFC 6901 JSON Pointer.', inputSchema: {type:'object',properties:{json:{type:'string'},pointer:{type:'string'}},required:['json','pointer'],additionalProperties:false}},
+  { name: 'url_encode', description: 'Percent-encode or decode a URL component.', inputSchema: {type:'object',properties:{text:{type:'string'},operation:{type:'string',enum:['encode','decode']}},required:['text','operation'],additionalProperties:false}},
   { name: 'url_inspect', description: 'Parse an HTTP(S) URL without fetching it.', inputSchema: {type:'object',properties:{url:{type:'string'}},required:['url'],additionalProperties:false}}
 ];
 function typeOf(value) {return value===null?'null':Array.isArray(value)?'array':typeof value;}
@@ -48,6 +50,28 @@ export function execute(name, args={}) {
     const date=new Date(args.value);
     if (!Number.isFinite(date.getTime())) throw new Error('Invalid timestamp');
     return {iso:date.toISOString(),unixSeconds:Math.floor(date.getTime()/1000),unixMilliseconds:date.getTime()};
+  }
+  if (name === 'json_pointer') {
+    if (typeof args.json !== 'string' || typeof args.pointer !== 'string') throw new Error('json and pointer must be strings');
+    let value=JSON.parse(args.json);
+    if (args.pointer !== '') {
+      if (!args.pointer.startsWith('/')) throw new Error('JSON Pointer must be empty or start with /');
+      for (const raw of args.pointer.slice(1).split('/')) {
+        if (/~(?![01])/.test(raw)) throw new Error('Invalid JSON Pointer escape');
+        const key=raw.replace(/~1/g,'/').replace(/~0/g,'~');
+        if (Array.isArray(value)) {
+          if (!/^(0|[1-9][0-9]*)$/.test(key) || !Object.hasOwn(value,key)) throw new Error('JSON Pointer target not found');
+        } else if (!value || typeof value !== 'object' || !Object.hasOwn(value,key)) throw new Error('JSON Pointer target not found');
+        value=value[key];
+      }
+    }
+    return {value};
+  }
+  if (name === 'url_encode') {
+    if (typeof args.text !== 'string') throw new Error('text must be a string');
+    if (args.operation === 'encode') return {operation:'encode',result:encodeURIComponent(args.text)};
+    if (args.operation === 'decode') return {operation:'decode',result:decodeURIComponent(args.text)};
+    throw new Error('operation must be encode or decode');
   }
   if (name === 'url_inspect') {
     if (typeof args.url !== 'string') throw new Error('url must be a string');
