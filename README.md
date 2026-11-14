@@ -56,6 +56,10 @@ Connect using stdio, list tools, and call `sha256_hash` with `{ "text": "abc" }`
 
 Example inputs: `json_pointer` takes `{ "json": "{\"a\":1}", "pointer": "/a" }` and returns `{ "value": 1 }`; `url_encode` takes `{ "text": "hello world", "operation": "encode" }` and returns `{ "operation": "encode", "result": "hello%20world" }`.
 
+## Contribute
+
+New contributors are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) and browse [good first issues](https://github.com/logicnestxvoidlure/mcp-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Start with a small change, run `npm test`, and open a pull request describing what you changed. Contributions are reviewed for correctness and maintainability; no prior MCP experience is required for documentation and test improvements.
+
 ## Development
 
 Run `npm test` (Node.js 20+). GitHub Actions tests Node.js 20, 22, and 24. See [CONTRIBUTING.md](CONTRIBUTING.md).
