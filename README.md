@@ -2,7 +2,7 @@
 
 A small, open-source **Model Context Protocol (MCP)** server providing developer utilities over stdio. Zero runtime dependencies; Node.js 20+.
 
-**Current version: v0.2.0** — seven local tools, zero runtime dependencies.
+**Current version: v0.3.0** — nine local tools, zero runtime dependencies.
 
 ## Tools
 
@@ -10,6 +10,8 @@ A small, open-source **Model Context Protocol (MCP)** server providing developer
 | --- | --- |
 | `json_inspect` | Validate JSON and report the value type, object keys, or array length |
 | `text_analyze` | Count Unicode characters, words, and lines |
+| `json_pointer` | Look up a JSON value by RFC 6901 pointer (e.g. `/items/0/name`) |
+| `url_encode` | Encode or decode URL components without network requests |
 | `url_inspect` | Parse an HTTP(S) URL without fetching it |
 | `sha256_hash` | Compute SHA-256 of UTF-8 text (hex output) |
 | `base64_convert` | Encode UTF-8 or decode strict Base64 UTF-8; `operation` is `encode` or `decode` |
@@ -51,6 +53,8 @@ npx @modelcontextprotocol/inspector node src/server.js
 Connect using stdio, list tools, and call `sha256_hash` with `{ "text": "abc" }`. The resulting SHA-256 hex digest starts with `ba7816bf`.
 
 `url_inspect` only parses URLs and never makes network requests. `timestamp_convert` requires a timezone in ISO strings; numeric timestamps are Unix milliseconds. Base64 decoding rejects malformed Base64 and invalid UTF-8.
+
+Example inputs: `json_pointer` takes `{ "json": "{\"a\":1}", "pointer": "/a" }` and returns `{ "value": 1 }`; `url_encode` takes `{ "text": "hello world", "operation": "encode" }` and returns `{ "operation": "encode", "result": "hello%20world" }`.
 
 ## Development
 
