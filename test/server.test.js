@@ -16,7 +16,7 @@ test('MCP handshake, discovery, invocation, and errors over stdio',async()=>{
  child.stdin.end(); await once(child,'close');
  assert.equal(responses.length,4);
  assert.equal(responses[0].result.serverInfo.name,'mcp-toolkit');
- assert.equal(responses[1].result.tools.length,3);
+ assert.equal(responses[1].result.tools.length,7);
  assert.equal(JSON.parse(responses[2].result.content[0].text).words,2);
  assert.equal(responses[3].error.code,-32601);
 });
