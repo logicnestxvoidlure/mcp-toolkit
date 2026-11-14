@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0 — 2026-11-14
+
+### Added
+- `json_pointer` supports RFC 6901 path lookup including escaped keys and array indices.
+- `url_encode` encodes and decodes URL components with Unicode support.
+- Ten new tests for successful and invalid inputs.
+
+### Updated
+- Nine discoverable MCP tools, Node.js 20+, no runtime dependencies.
+
 ## v0.2.0 — 2026-11-14
 
 ### Added
