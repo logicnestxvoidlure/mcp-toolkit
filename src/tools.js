@@ -44,7 +44,7 @@ export function execute(name, args={}) {
   }
   if (name === 'timestamp_convert') {
     if (typeof args.value !== 'string' && typeof args.value !== 'number') throw new Error('value must be an ISO string or Unix milliseconds');
-    if (typeof args.value === 'string' && !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$/.test(args.value)) throw new Error('Provide an ISO 8601 timestamp with timezone');
+    if (typeof args.value === 'string' && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(args.value)) throw new Error('Provide an ISO 8601 timestamp with timezone');
     const date=new Date(args.value);
     if (!Number.isFinite(date.getTime())) throw new Error('Invalid timestamp');
     return {iso:date.toISOString(),unixSeconds:Math.floor(date.getTime()/1000),unixMilliseconds:date.getTime()};
