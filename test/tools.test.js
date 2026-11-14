@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { definitions, execute } from '../src/tools.js';
 
-test('three tools are published', () => assert.equal(definitions.length, 3));
+test('seven tools are published', () => assert.equal(definitions.length, 7));
 test('JSON object inspection', () => assert.deepEqual(execute('json_inspect',{json:'{"hello":1}'}),{valid:true,type:'object',keys:['hello'],keyCount:1}));
 test('JSON arrays', () => assert.deepEqual(execute('json_inspect',{json:'[1,2]'}),{valid:true,type:'array',length:2}));
 test('bad JSON fails', () => assert.throws(()=>execute('json_inspect',{json:'{bad'})));
@@ -11,3 +11,18 @@ test('empty text', () => assert.deepEqual(execute('text_analyze',{text:''}),{cha
 test('URL inspection', () => assert.deepEqual(execute('url_inspect',{url:'https://example.com/a?x=1#top'}),{protocol:'https:',hostname:'example.com',port:'',path:'/a',query:{x:'1'},hash:'#top'}));
 test('non-HTTP URL rejected', () => assert.throws(()=>execute('url_inspect',{url:'file:///etc/passwd'})));
 test('unknown tool rejected', () => assert.throws(()=>execute('missing',{})));
+
+test('SHA-256 known vector',()=>assert.equal(execute('sha256_hash',{text:'abc'}).hex,'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'));
+test('SHA-256 empty string',()=>assert.equal(execute('sha256_hash',{text:''}).hex,'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'));
+test('Base64 Unicode round trip',()=>{const encoded=execute('base64_convert',{operation:'encode',text:'Hello 🌍'}).result;assert.equal(execute('base64_convert',{operation:'decode',text:encoded}).result,'Hello 🌍');});
+test('Base64 invalid input',()=>assert.throws(()=>execute('base64_convert',{operation:'decode',text:'!'})));
+test('Base64 rejects invalid UTF-8',()=>assert.throws(()=>execute('base64_convert',{operation:'decode',text:'/w=='})));
+test('Base64 rejects unknown operation',()=>assert.throws(()=>execute('base64_convert',{operation:'other',text:'abc'})));
+test('JSON pretty-print',()=>assert.equal(execute('json_format',{json:'{"a":1}'}).formatted,'{\\n  "a": 1\\n}'));
+test('JSON minify',()=>assert.equal(execute('json_format',{json:'{ "a" : 1 }',indent:0}).formatted,'{"a":1}'));
+test('JSON invalid indent',()=>assert.throws(()=>execute('json_format',{json:'{}',indent:9})));
+test('JSON invalid input',()=>assert.throws(()=>execute('json_format',{json:'oops'})));
+test('timestamp UTC ISO',()=>assert.deepEqual(execute('timestamp_convert',{value:'2026-01-01T00:00:00Z'}),{iso:'2026-01-01T00:00:00.000Z',unixSeconds:1767225600,unixMilliseconds:1767225600000}));
+test('timestamp milliseconds',()=>assert.equal(execute('timestamp_convert',{value:0}).iso,'1970-01-01T00:00:00.000Z'));
+test('timestamp timezone required',()=>assert.throws(()=>execute('timestamp_convert',{value:'2026-01-01'})));
+test('timestamp invalid',()=>assert.throws(()=>execute('timestamp_convert',{value:'2026-99-99T00:00:00Z'})));
