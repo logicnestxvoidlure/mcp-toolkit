@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { definitions, execute } from '../src/tools.js';
 
-test('seven tools are published', () => assert.equal(definitions.length, 7));
+test('nine tools are published', () => assert.equal(definitions.length, 9));
 test('JSON object inspection', () => assert.deepEqual(execute('json_inspect',{json:'{"hello":1}'}),{valid:true,type:'object',keys:['hello'],keyCount:1}));
 test('JSON arrays', () => assert.deepEqual(execute('json_inspect',{json:'[1,2]'}),{valid:true,type:'array',length:2}));
 test('bad JSON fails', () => assert.throws(()=>execute('json_inspect',{json:'{bad'})));
@@ -26,3 +26,14 @@ test('timestamp UTC ISO',()=>assert.deepEqual(execute('timestamp_convert',{value
 test('timestamp milliseconds',()=>assert.equal(execute('timestamp_convert',{value:0}).iso,'1970-01-01T00:00:00.000Z'));
 test('timestamp timezone required',()=>assert.throws(()=>execute('timestamp_convert',{value:'2026-01-01'})));
 test('timestamp invalid',()=>assert.throws(()=>execute('timestamp_convert',{value:'2026-99-99T00:00:00Z'})));
+
+test('JSON Pointer root',()=>assert.deepEqual(execute('json_pointer',{json:'[1,2]',pointer:''}),{value:[1,2]}));
+test('JSON Pointer nested path',()=>assert.deepEqual(execute('json_pointer',{json:'{"a":{"b":[10,20]}}',pointer:'/a/b/1'}),{value:20}));
+test('JSON Pointer escaped keys',()=>assert.deepEqual(execute('json_pointer',{json:'{"a/b":{"~":true}}',pointer:'/a~1b/~0'}),{value:true}));
+test('JSON Pointer rejects missing paths',()=>assert.throws(()=>execute('json_pointer',{json:'{}',pointer:'/missing'})));
+test('JSON Pointer rejects invalid escape',()=>assert.throws(()=>execute('json_pointer',{json:'{}',pointer:'/bad~2'})));
+test('JSON Pointer rejects invalid array index',()=>assert.throws(()=>execute('json_pointer',{json:'[1]',pointer:'/01'})));
+test('URL component Unicode round trip',()=>{const encoded=execute('url_encode',{text:'hello world 🌍',operation:'encode'}).result;assert.equal(execute('url_encode',{text:encoded,operation:'decode'}).result,'hello world 🌍');});
+test('URL component percent encoding',()=>assert.equal(execute('url_encode',{text:'a&b=c',operation:'encode'}).result,'a%26b%3Dc'));
+test('URL component malformed escape',()=>assert.throws(()=>execute('url_encode',{text:'%ZZ',operation:'decode'})));
+test('URL component unknown operation',()=>assert.throws(()=>execute('url_encode',{text:'a',operation:'wrong'})));
