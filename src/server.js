@@ -9,7 +9,7 @@ function handle(request) {
   const {id,method,params={}}=request;
   if(method==='notifications/initialized') return;
   if(id===undefined) return;
-  if(method==='initialize') return {jsonrpc:'2.0',id,result:{protocolVersion:VERSION,capabilities:{tools:{listChanged:false}},serverInfo:{name:'mcp-toolkit',version:'0.2.0'}}};
+  if(method==='initialize') return {jsonrpc:'2.0',id,result:{protocolVersion:VERSION,capabilities:{tools:{listChanged:false}},serverInfo:{name:'mcp-toolkit',version:'0.3.0'}}};
   if(method==='ping') return {jsonrpc:'2.0',id,result:{}};
   if(method==='tools/list') return {jsonrpc:'2.0',id,result:{tools:definitions}};
   if(method==='tools/call') {
