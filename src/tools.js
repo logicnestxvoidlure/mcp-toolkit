@@ -14,7 +14,7 @@ export function execute(name, args={}) {
   if (name === 'text_analyze') {
     if (typeof args.text !== 'string') throw new Error('text must be a string');
     const text=args.text;
-    return {characters:[...text].length, words:text.trim()?text.trim().split(/\\s+/u).length:0, lines:text===''?0:text.split(/\\r\\n|\\n|\\r/u).length};
+    return {characters:[...text].length, words:text.trim()?text.trim().split(/\s+/u).length:0, lines:text===''?0:text.split(/\r\n|\n|\r/u).length};
   }
   if (name === 'url_inspect') {
     if (typeof args.url !== 'string') throw new Error('url must be a string');
