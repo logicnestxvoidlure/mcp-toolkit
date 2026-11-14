@@ -18,7 +18,7 @@ test('Base64 Unicode round trip',()=>{const encoded=execute('base64_convert',{op
 test('Base64 invalid input',()=>assert.throws(()=>execute('base64_convert',{operation:'decode',text:'!'})));
 test('Base64 rejects invalid UTF-8',()=>assert.throws(()=>execute('base64_convert',{operation:'decode',text:'/w=='})));
 test('Base64 rejects unknown operation',()=>assert.throws(()=>execute('base64_convert',{operation:'other',text:'abc'})));
-test('JSON pretty-print',()=>assert.equal(execute('json_format',{json:'{"a":1}'}).formatted,'{\n  "a": 1\n}'));
+test('JSON pretty-print',()=>assert.equal(execute('json_format',{json:'{"a":1}'}).formatted,JSON.stringify({a:1},null,2)));
 test('JSON minify',()=>assert.equal(execute('json_format',{json:'{ "a" : 1 }',indent:0}).formatted,'{"a":1}'));
 test('JSON invalid indent',()=>assert.throws(()=>execute('json_format',{json:'{}',indent:9})));
 test('JSON invalid input',()=>assert.throws(()=>execute('json_format',{json:'oops'})));
